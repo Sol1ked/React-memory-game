@@ -28,122 +28,118 @@ const cards = [{id: 1, src: cardPhoto1, flip: false}, {id: 2, src: cardPhoto2, f
 
 
 const App = () => {
-        const [copyArr, setCopyArr] = useState(cards.slice());
-        const [flipped, setFlipped] = useState([]);
-        const [count, setCount] = useState(0)
-        const [victory, setVictory] = useState(false)
-        const [start, setStart] = useState(false)
-        const handleCardClick = (card) => {
-            if (start) {
-                setCopyArr((prevCopyArr) => {
-                    return prevCopyArr.map((c) => {
-                        if (c.id === card.id) {
-                            return {
-                                ...c,
-                                flip: !c.flip,
-                            };
-                        }
-                        return c;
-                    });
+    const [copyArr, setCopyArr] = useState(cards.slice());
+    const [flipped, setFlipped] = useState([]);
+    const [count, setCount] = useState(0)
+    const [victory, setVictory] = useState(false)
+    const [start, setStart] = useState(false)
+    const handleCardClick = (card) => {
+        if (start) {
+            setCopyArr((prevCopyArr) => {
+                return prevCopyArr.map((c) => {
+                    if (c.id === card.id) {
+                        return {
+                            ...c, flip: !c.flip,
+                        };
+                    }
+                    return c;
                 });
+            });
 
-                setFlipped((prevFlipped) => [...prevFlipped, card]);
-            }
-        };
-
-        useEffect(() => {
-            checkCard();
-        }, [flipped]);
-
-        const checkVictory = () => {
-            const isWin = copyArr.every((card) => card.flip === true)
-            setVictory(isWin);
+            setFlipped((prevFlipped) => [...prevFlipped, card]);
         }
-        const checkCard = () => {
-            if (flipped.length === 2) {
-                setCount(count + 1)
-                checkVictory()
-                if (flipped[0].src === flipped[1].src) {
-                    setFlipped([]);
-                } else {
-                    setTimeout(() => {
-                        setCopyArr((prevCopyArr) => {
-                            return prevCopyArr.map((c) => {
-                                if (c.id === flipped[0].id || c.id === flipped[1].id) {
-                                    return {
-                                        ...c,
-                                        flip: false,
-                                    };
-                                }
-                                return c;
-                            });
+    };
+
+    useEffect(() => {
+        checkCard();
+    }, [flipped]);
+
+    const checkVictory = () => {
+        const isWin = copyArr.every((card) => card.flip === true)
+        setVictory(isWin);
+    }
+    const checkCard = () => {
+        if (flipped.length === 2) {
+            setCount(count + 1)
+            checkVictory()
+            if (flipped[0].src === flipped[1].src) {
+                setFlipped([]);
+            } else {
+                setTimeout(() => {
+                    setCopyArr((prevCopyArr) => {
+                        return prevCopyArr.map((c) => {
+                            if (c.id === flipped[0].id || c.id === flipped[1].id) {
+                                return {
+                                    ...c, flip: false,
+                                };
+                            }
+                            return c;
                         });
-                        setFlipped([]);
-                    }, 1000);
-                }
+                    });
+                    setFlipped([]);
+                }, 1000);
             }
-        };
-
-        const handleStartClick = (start) => {
-            setStart(start)
         }
+    };
 
-        const handleRestartClick = () => {
-            setCopyArr(cards.slice())
-            setFlipped([])
+    const handleStartClick = (start) => {
+        setStart(start)
+    }
 
-            console.log(copyArr)
-        }
+    const handleRestartClick = () => {
+        setCopyArr(cards.slice())
+        setFlipped([])
+        setCount(0)
+        setVictory(false)
+        setStart(false)
+    }
 
 
-        return (
-            <div className="
+    return (<div className="
             w-full h-screen
             flex items-center justify-center
             max-w-[1240px] m-auto gap-4
         ">
-                <div>
-                    <div className="flex flex-col gap-4">
-                        {victory &&
-                            <div className="
+        <div>
+            <div className="flex flex-col gap-4">
+                {victory && <div className="
                              w-full
                             z-10 bg-card-color
                             top-[-10%] text-center
                             p-2 transition-all duration-500   [transform-style:preserve-3d]
                         ">
-                                <div
-                                    className="
+                    <div
+                        className="
                                     border-[1px] border-[#4E4E4E]
                                     w-full text-font-color
                                     text-3xl gap-2
                                     justify-center border-card-color
                                     flex p-4 rounded">
-                                    <p> Игра окончена!</p>
-                                    <p> Ходов сделано: {count}</p>
-                                </div>
-                            </div>
-                        }
-                        <div className="flex  rounded  bg-card-color">
-                            <div className="flex w-full py-4 pl-4">
-                                <div className="grid grid-cols-4 gap-4">
-                                    {copyArr.map((card) => (<div
-                                        className="group h-44 w-44 [perspective:1000px]"
-                                        onClick={() => handleCardClick(card)}
-                                        key={card.id}
-                                    >
-                                        <div className={`
+                        <p> Игра окончена!</p>
+                        <p> Ходов сделано: {count}</p>
+                    </div>
+                </div>}
+                <div className="flex  rounded  bg-card-color">
+                    <div className="flex w-full py-4 pl-4">
+                        <div className="grid grid-cols-4 gap-4">
+                            {copyArr.map((card) => (<div
+                                className="group h-44 w-44 [perspective:1000px]"
+                                onClick={() => handleCardClick(card)}
+                                key={card.id}
+                            >
+                                <div className={`
                                             relative h-full w-full
                                             rounded cursor-pointer
                                             border-[1px] border-border-color
                                             [transform-style:preserve-3d] transition-all duration-500
                                             ${card.flip && '[transform:rotateY(-180deg)]'}         
                                         `}>
-                                            <div className="absolute inset-0">
-                                                <img className="h-full w-full rounded object-cover"
-                                                     src={cardPhotoQuestion}
-                                                     alt="/"/>
-                                            </div>
-                                            <div className={`
+                                    <div className="absolute inset-0">
+                                        <img className="h-full w-full rounded object-cover"
+                                             src={cardPhotoQuestion}
+                                             alt="/"/>
+                                    </div>
+                                    <div className={`
                                 absolute inset-0
                                 h-full w-full
                                 rounded-xl bg-card-color
@@ -152,23 +148,23 @@ const App = () => {
                                 [backface-visibility:hidden]
                                 [transform:rotateY(180deg)]
                              `}>
-                                                <img className="h-full w-full rounded object-cover" src={card.src}
-                                                     alt="/"/>
-                                            </div>
-                                        </div>
-                                    </div>))}
+                                        <img className="h-full w-full rounded object-cover" src={card.src}
+                                             alt="/"/>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex-auto justify-between p-4">
-                                <div className="
+                            </div>))}
+                        </div>
+                    </div>
+                    <div className="flex-auto justify-between p-4">
+                        <div className="
                                 flex gap-4 rounded items-center
                                 p-3 flex-col border-[1px]
                                 border-border-color h-full
                         ">
-                                    <div className="flex-1 flex-col justify-center">
-                                        <p className="text-font-color text-lg text-center">Ходы: <span>{count}</span></p>
-                                    </div>
-                                    <button className="
+                            <div className="flex-1 flex-col justify-center">
+                                <p className="text-font-color text-lg text-center">Ходы: <span>{count}</span></p>
+                            </div>
+                            <button className="
                             text-font-color
                             border-[1px] border-border-color
                             bg-button-bg-color p-2.5 rounded
@@ -176,28 +172,27 @@ const App = () => {
                             duration-300
                             focus:border-[1px] focus:border-border-focus-color
                         " onClick={() => handleStartClick(!start)}>
-                                        <RiPlayCircleLine size={18}/>
-                                    </button>
-                                    <button className="
+                                <RiPlayCircleLine size={18}/>
+                            </button>
+                            <button className="
                             text-font-color border-[1px]
                             border-border-color p-2.5 rounded
                             hover:bg-[#2c2c2c] hover:duration-300
                             duration-300
                             focus:border-[1px] focus:border-border-focus-color
                         " onClick={handleRestartClick}>
-                                        <VscDebugRestart
-                                            size={18}
-                                        />
-                                    </button>
-                                </div>
-                            </div>
+                                <VscDebugRestart
+                                    size={18}
+                                />
+                            </button>
                         </div>
                     </div>
-
                 </div>
-            </div>);
-    }
-;
+            </div>
+
+        </div>
+    </div>);
+};
 
 export default App;
 
